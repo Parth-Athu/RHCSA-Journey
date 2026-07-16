@@ -1,116 +1,257 @@
-CH-1 Introduction to Vim and ssh
+# Chapter 1: Introduction to Vim & SSH
 
-Bash shell ( Bourne again shell )
-tilde= home directory
+## Bash Shell
 
+- **Bash** stands for **Bourne Again Shell**.
+- It is the default command-line shell in most Linux distributions.
 
-administrator=root
+### Useful Terms
 
-command syntax in linux
+| Term | Description |
+|------|-------------|
+| `~` | Represents the current user's **Home Directory** |
+| `root` | Administrator account with full system privileges |
 
-command [option/argument] [target in form of path]
- type of command written 
+---
 
-# command 
-#command option 
-#command argument 
-# command option argument 
+# Linux Command Syntax
 
-there is help available for each command in two ways
-1) command name --help = this will show all availble options for each command
-2) man command name = displays manual page of each command
+```bash
+command [option] [argument]
+```
 
---> Basic commands in Linux:
-1) ls = lists all content of the working directory
-2) ls -l = long lists the working directory
-3) ls -a = lists the directory including hidden files and directories
-4) ls -t = lists the directory according to time frame we can see latest modified/created files at the top of the list by using this command
-5) touch = create blank file
-syntax: touch [filename/path]
-6) mkdir = creates blank directory
-syntax: mkdir [directory name/path]
-7) rm = removes file
-syntax: rm [filename/path]
-8)rmdir = removes blank directory
-rmdir [directory name/path]
-9)rm -rf = forcedfully remove file or directory
-rm -rf [file/directory name/path]
-10) cat = read file content on terminal
-11) head = read first 10 lines of file on terminal
-12) tail = read last 10 lines of file on terminal
-13) echo = insert some text string into some file or terminal.
- 
+### Examples
 
-we have a one tool before ssh named -> talent -> they also work as a ssh but when they create network in plain text
----------------------------------------------------------------------------------------------------
-ssh
-secure shell
-program is used to take remote connection to any system
+```bash
+ls
+ls -l
+mkdir test
+rm file.txt
+```
 
-syntax: ssh [username]@[machine name(hostname)/ip address]
-case-1: to get remote connection of any user without entering password
+---
 
---> first generate keys in ssh
---> ssh-keygen 
---> newly created keys can be found in .ssh folder
-then copy the created keys to that user of the machine whom we have to take remote connection.
-by command:
-ssh-copy-id remote username@remotemachine hostname/ip address
-then do ssh to that remote user. 
+# Getting Help in Linux
 
-case-2 : passphrase key generation: passphrase is password of the key to add an extra layer of security to the keys.
+There are two common ways to get help for any command.
 
-procedure for generation passphrase keys:
---> ssh-keygen
---> enter passphrase
---> enter passphrase again
-now key with passprase would be generated 
---> next step is to send that key to that remote machine
---> ssh-copy-id remote username@remotemachine hostname/ip address
---> then do ssh to remote user you will notice that every time now we have to enter passphrase of key to enter into the server.
+### 1. Using `--help`
 
-case-3 entering into remote server without entering passphrase of the key:
+Displays available options for a command.
 
---> to overcome this situation we have to establish a process named as ssh-agent 
---> ssh-agent is the background process which enters the security credentials on behalf of the user so if we assign passphrase of the key to that agent we dont have to enter it at the time of the remote connection.
---> to enable ssh agent use command
+```bash
+command --help
+```
+
+Example:
+
+```bash
+ls --help
+```
+
+### 2. Using `man`
+
+Displays the complete manual page of a command.
+
+```bash
+man command
+```
+
+Example:
+
+```bash
+man ls
+```
+
+---
+
+# Basic Linux Commands
+
+| Command | Description |
+|---------|-------------|
+| `ls` | List files and directories |
+| `ls -l` | Long listing format |
+| `ls -a` | Show hidden files and directories |
+| `ls -t` | Sort files by modification time |
+| `touch file.txt` | Create a new empty file |
+| `mkdir folder` | Create a new directory |
+| `rm file.txt` | Delete a file |
+| `rmdir folder` | Delete an empty directory |
+| `rm -rf folder` | Force delete a file or directory |
+| `cat file.txt` | Display file contents |
+| `head file.txt` | Show the first 10 lines |
+| `tail file.txt` | Show the last 10 lines |
+| `echo "text"` | Display or write text |
+
+---
+
+# SSH (Secure Shell)
+
+SSH (**Secure Shell**) is a protocol used to securely connect to a remote Linux system.
+
+### SSH Syntax
+
+```bash
+ssh username@hostname
+```
+
+or
+
+```bash
+ssh username@IP_Address
+```
+
+Example:
+
+```bash
+ssh parth@192.168.1.10
+```
+
+---
+
+# Passwordless SSH Login
+
+## Step 1: Generate SSH Keys
+
+```bash
+ssh-keygen
+```
+
+The keys are stored in:
+
+```text
+~/.ssh/
+```
+
+Files created:
+
+- `id_rsa` → Private Key
+- `id_rsa.pub` → Public Key
+
+---
+
+## Step 2: Copy the Public Key
+
+```bash
+ssh-copy-id username@hostname
+```
+
+Example:
+
+```bash
+ssh-copy-id parth@192.168.1.10
+```
+
+---
+
+## Step 3: Login
+
+```bash
+ssh username@hostname
+```
+
+Now you can log in without entering the remote account password.
+
+---
+
+# SSH with Passphrase
+
+A **passphrase** adds an extra layer of security to your private key.
+
+## Generate a Passphrase-Protected Key
+
+```bash
+ssh-keygen
+```
+
+During key generation:
+
+```text
+Enter passphrase:
+Confirm passphrase:
+```
+
+Copy the key:
+
+```bash
+ssh-copy-id username@hostname
+```
+
+Now, every time you connect, SSH will ask for the passphrase.
+
+---
+
+# Using SSH Agent
+
+Instead of typing the passphrase every time, use **ssh-agent**.
+
+## Start the Agent
+
+```bash
 eval $(ssh-agent)
-then you will find that ssh agent process is running with some specific process id
---> next step is to assign passphrase to the ssh agent by this command
-ssh-add .ssh/private key name
---> after adding security credentials to agent we can connect to remote machine without entering passphrase 
+```
 
+## Add Your Private Key
 
-----------------------------------------------------------------------------------------------------
-Non-interactive key (non-default)
+```bash
+ssh-add ~/.ssh/id_rsa
+```
 
-step-1 generate non interactive key:
-ssh-keygen -f .ssh/mykey enter
+After adding the key, SSH uses the stored credentials automatically.
 
-here f is used to forcedfully create non-default key 
+---
 
-step-2 copy this key to a remote user
-ssh-copy-id -i .ssh/mykey.pub username@hostname
+# Creating a Non-Default SSH Key
 
-here -i is used for case ignorance of default key name.
+Generate a custom key.
 
+```bash
+ssh-keygen -f ~/.ssh/mykey
+```
 
+This creates:
 
+```text
+mykey
+mykey.pub
+```
 
+---
 
+## Copy the Custom Public Key
 
+```bash
+ssh-copy-id -i ~/.ssh/mykey.pub username@hostname
+```
 
+The `-i` option specifies which public key to copy.
 
+---
 
+# Important SSH Commands
 
+```bash
+ssh username@hostname
+ssh-keygen
+ssh-copy-id username@hostname
+ssh-agent
+eval $(ssh-agent)
+ssh-add ~/.ssh/id_rsa
+ssh-keygen -f ~/.ssh/mykey
+ssh-copy-id -i ~/.ssh/mykey.pub username@hostname
+```
 
+---
 
+# Key Points
 
-
-
-
-
-
-
-
-
+- Bash is the default Linux shell.
+- `~` represents the home directory.
+- `root` is the administrator account.
+- Use `--help` or `man` to learn about commands.
+- SSH provides secure remote access.
+- `ssh-keygen` creates SSH key pairs.
+- `ssh-copy-id` copies the public key to a remote server.
+- A passphrase secures your private key.
+- `ssh-agent` stores your key in memory to avoid entering the passphrase repeatedly.
+- Custom SSH keys can be created using the `-f` option.
