@@ -1,62 +1,68 @@
-# Chapter 3: Users and Groups
+# Chapter 3: Users, Groups & Password Management
 
-> **Objective:** Learn about Linux user types, User IDs (UIDs), Group IDs (GIDs), user management, and group management.
+> **Objective:** Learn Linux user management, groups, password policies, user account administration, and password aging using practical commands.
 
 ---
 
 # Table of Contents
 
 1. Introduction
-2. Types of Users
+2. Types of Linux Users
 3. User Identification Number (UID)
-4. User Information (`/etc/passwd`)
-5. Creating Users
-6. Setting User Passwords
-7. Modifying Users
-8. Groups
-9. Viewing User Information
-10. Practice Tasks
-11. Interview Questions
-12. Common Mistakes
-13. Quick Revision
-14. Summary
-15. Key Takeaways
+4. Group Identification Number (GID)
+5. User Information (`/etc/passwd`)
+6. Group Information (`/etc/group`)
+7. Password Information (`/etc/shadow`)
+8. Creating Users
+9. Setting Passwords
+10. Modifying Users
+11. Groups
+12. Password Aging Policy
+13. Managing Password Policy (`chage`)
+14. Default Password Policy (`/etc/login.defs`)
+15. Practice Tasks
+16. RHCSA Exam Tips
+17. Interview Questions
+18. Common Mistakes
+19. Quick Revision
+20. Summary
+21. Key Takeaways
 
 ---
 
 # Introduction
 
-Linux is a multi-user operating system, meaning multiple users can work on the same system simultaneously.
+Linux is a **multi-user operating system**, allowing multiple users to access and work on the same system simultaneously.
 
-Each user has a unique identity and specific permissions that determine what they can access or modify.
+Each user has a unique identity, permissions, and home directory.
 
-User and group management is one of the core responsibilities of a Linux System Administrator.
+Managing users and groups is one of the most important responsibilities of a Linux System Administrator.
 
 ---
 
-# 1. Types of Users
+# Types of Linux Users
 
-Linux has three main types of users.
+Linux supports three types of users.
 
 ## 1. Super User (Root)
 
 The **root** user is the administrator of the Linux system.
 
-Features:
+Features
 
-- Full access to the entire system
+- Full administrative privileges
+- Can create and delete users
 - Can install software
-- Can create or delete users
 - Can modify system configurations
-- Can access every file and directory
+- Can access all files and directories
 
-Username:
+Username
 
 ```text
 root
 ```
 
-UID:
+UID
 
 ```text
 0
@@ -66,21 +72,25 @@ UID:
 
 ## 2. Regular User (Local User)
 
-A regular user is created for daily work.
+Regular users are created for everyday work.
 
-Examples:
+Examples
 
-- parth
-- student
-- john
+```text
+parth
+
+student
+
+john
+```
 
 Features
 
 - Limited permissions
-- Cannot modify system files
-- Can access only permitted resources
+- Personal home directory
+- Cannot modify critical system files
 
-UID Range
+Default UID Range
 
 ```text
 1000 - 60000
@@ -90,16 +100,21 @@ UID Range
 
 ## 3. System User
 
-System users are created automatically by Linux for running services and applications.
+System users are automatically created for services.
 
 Examples
 
-- apache
-- mysql
-- sshd
-- nobody
+```text
+apache
 
-These users are generally not used for logging in.
+mysql
+
+sshd
+
+nobody
+```
+
+These accounts generally cannot log in.
 
 UID Range
 
@@ -109,29 +124,37 @@ UID Range
 
 ---
 
-# 2. User Identification Number (UID)
+# User Identification Number (UID)
 
-Every user has a unique **User Identification Number (UID)**.
+Each Linux user has a unique User ID (UID).
 
-Linux uses the UID internally instead of the username.
+Linux internally identifies users by UID rather than username.
 
-| UID Range | User Type |
-|-----------|-----------|
-| 0 | Root User |
-| 1 - 999 | System Users |
-| 1000 - 60000 | Regular Users |
+| UID | User Type |
+|------|-----------|
+| 0 | Root |
+| 1–999 | System Users |
+| 1000–60000 | Regular Users |
 
 ---
 
-# 3. User Information
+# Group Identification Number (GID)
 
-Linux stores user information in
+Every group has a unique Group ID (GID).
+
+Groups simplify permission management by allowing multiple users to share the same permissions.
+
+---
+
+# User Information
+
+Linux stores user account information in
 
 ```text
 /etc/passwd
 ```
 
-Display its contents
+View users
 
 ```bash
 cat /etc/passwd
@@ -143,127 +166,23 @@ Example
 root:x:0:0:root:/root:/bin/bash
 ```
 
-Explanation
+Meaning
 
-| Field | Meaning |
-|--------|----------|
+| Field | Description |
+|---------|-------------|
 | root | Username |
 | x | Password placeholder |
 | 0 | UID |
 | 0 | GID |
-| root | User description (GECOS) |
+| root | User description |
 | /root | Home Directory |
 | /bin/bash | Default Login Shell |
 
 ---
 
-# 4. Creating a User
+# Group Information
 
-The `useradd` command creates a new user.
-
-## Syntax
-
-```bash
-useradd username
-```
-
-Example
-
-```bash
-useradd test1
-```
-
-Verify
-
-```bash
-cat /etc/passwd
-```
-
-or
-
-```bash
-id test1
-```
-
----
-
-# 5. Setting a Password
-
-After creating a user, assign a password.
-
-## Syntax
-
-```bash
-passwd username
-```
-
-Example
-
-```bash
-passwd test1
-```
-
-Linux prompts for
-
-```
-New Password
-
-Retype Password
-```
-
----
-
-# 6. Usermod Command
-
-`usermod` modifies an existing user account.
-
-## Syntax
-
-```bash
-usermod [options] username
-```
-
-View available options
-
-```bash
-usermod --help
-```
-
-Common examples
-
-Change login shell
-
-```bash
-usermod -s /bin/bash test1
-```
-
-Change home directory
-
-```bash
-usermod -d /home/newhome test1
-```
-
-Lock a user
-
-```bash
-usermod -L test1
-```
-
-Unlock a user
-
-```bash
-usermod -U test1
-```
-
----
-
-# 7. Groups
-
-A group is a collection of users.
-
-Groups simplify permission management.
-
-Linux stores group information in
+Group details are stored in
 
 ```text
 /etc/group
@@ -277,19 +196,136 @@ cat /etc/group
 
 ---
 
-## Primary Group
+# Password Information
 
-Every user has exactly one primary group.
+Encrypted passwords are stored in
 
-It is automatically created when the user is created (unless specified otherwise).
+```text
+/etc/shadow
+```
+
+Only the **root user** can read this file.
+
+View
+
+```bash
+cat /etc/shadow
+```
 
 Example
 
-```
-test1
+```text
+root:$6$.....:19130:0:99999:7:::
 ```
 
-Primary Group
+---
+
+# Understanding /etc/shadow
+
+| Field | Description |
+|---------|-------------|
+| Username | Login name |
+| Encrypted Password | SHA-512 encrypted password |
+| Last Password Change | Days since 1 Jan 1970 |
+| Minimum Password Age | Minimum days before changing password |
+| Maximum Password Age | Password validity |
+| Warning Days | Password expiry warning |
+| Inactive Days | Grace period after expiry |
+| Expiry Date | Account expiration date |
+
+---
+
+# Creating Users
+
+Syntax
+
+```bash
+useradd username
+```
+
+Example
+
+```bash
+useradd test1
+```
+
+Specify UID
+
+```bash
+useradd -u 3000 test1
+```
+
+Verify
+
+```bash
+id test1
+```
+
+---
+
+# Setting Passwords
+
+Syntax
+
+```bash
+passwd username
+```
+
+Example
+
+```bash
+passwd test1
+```
+
+---
+
+# Modifying Users
+
+The **usermod** command modifies an existing user.
+
+Syntax
+
+```bash
+usermod [options] username
+```
+
+Examples
+
+Change shell
+
+```bash
+usermod -s /bin/bash test1
+```
+
+Change home directory
+
+```bash
+usermod -d /home/test1 test1
+```
+
+Lock account
+
+```bash
+usermod -L test1
+```
+
+Unlock account
+
+```bash
+usermod -U test1
+```
+
+---
+
+# Groups
+
+Linux supports two types of groups.
+
+## Primary Group
+
+Every user has one primary group.
+
+Example
 
 ```
 test1
@@ -299,9 +335,9 @@ test1
 
 ## Secondary Group
 
-A user can belong to multiple secondary groups.
+A user may belong to multiple secondary groups.
 
-Example
+Examples
 
 ```
 developers
@@ -313,71 +349,173 @@ wheel
 
 ---
 
-# Group ID (GID)
+# Password Aging Policy
 
-Every group has a unique Group ID.
+Password aging improves account security.
+
+### Last Password Change (-d)
+
+Days since **1 January 1970**.
+
+---
+
+### Minimum Password Age (-m)
+
+Minimum days before changing password.
 
 Example
 
-```bash
-cat /etc/group
+```
+0
 ```
 
-Output
+Meaning
 
-```text
-developers:x:1001:
+User can change password anytime.
+
+---
+
+### Maximum Password Age (-M)
+
+Maximum number of days the password remains valid.
+
+Example
+
+```
+30
 ```
 
 ---
 
-# 8. Viewing User Information
+### Warning Days (-W)
 
-The `id` command displays information about a user.
+Number of days before expiry when Linux warns the user.
 
-## Syntax
+Example
 
-```bash
-id username
+```
+7
+```
+
+---
+
+### Inactive Days (-I)
+
+Grace period after password expiration.
+
+Example
+
+```
+5
+```
+
+---
+
+### Account Expiry (-E)
+
+Account expiration date.
+
+Format
+
+```text
+YYYY-MM-DD
 ```
 
 Example
 
-```bash
-id test1
+```
+2026-12-31
 ```
 
-Example Output
+---
+
+# Managing Password Policy
+
+Linux uses the **chage** command.
+
+Display password information
+
+```bash
+chage -l test1
+```
+
+Force password change at next login
+
+```bash
+chage -d 0 test1
+```
+
+Set minimum password age
+
+```bash
+chage -m 2 test1
+```
+
+Set maximum password age
+
+```bash
+chage -M 30 test1
+```
+
+Set warning period
+
+```bash
+chage -W 7 test1
+```
+
+Set inactive period
+
+```bash
+chage -I 5 test1
+```
+
+Set account expiry
+
+```bash
+chage -E 2026-12-31 test1
+```
+
+---
+
+# Default Password Policy
+
+Linux applies default password settings from
 
 ```text
-uid=3000(test1)
-gid=3000(test1)
-groups=3000(test1)
+/etc/login.defs
 ```
+
+View
+
+```bash
+cat /etc/login.defs
+```
+
+This file controls
+
+- Default UID range
+- Password expiration
+- Password aging
+- Warning period
+- Home directory creation
 
 ---
 
 # Practice Tasks
 
-## Task 1
+### Task 1
 
-Create a user named
-
-```text
-test1
-```
-
-Assign UID
-
-```
-3000
-```
+Create user
 
 ```bash
 useradd -u 3000 test1
 ```
 
-Set password
+---
+
+### Task 2
+
+Assign password
 
 ```bash
 passwd test1
@@ -385,13 +523,9 @@ passwd test1
 
 ---
 
-## Task 2
+### Task 3
 
-Display information about
-
-```
-test1
-```
+Check user information
 
 ```bash
 id test1
@@ -399,7 +533,7 @@ id test1
 
 ---
 
-## Task 3
+### Task 4
 
 Display all users
 
@@ -409,9 +543,9 @@ cat /etc/passwd
 
 ---
 
-## Task 4
+### Task 5
 
-Display all groups
+Display groups
 
 ```bash
 cat /etc/group
@@ -419,84 +553,127 @@ cat /etc/group
 
 ---
 
-## Task 5
+### Task 6
 
-View useradd options
+Display password policy
 
 ```bash
-useradd --help
+chage -l test1
 ```
+
+---
+
+### Task 7
+
+Force password change
+
+```bash
+chage -d 0 test1
+```
+
+---
+
+### Task 8
+
+Set password aging
+
+```bash
+chage -m 2 test1
+
+chage -M 30 test1
+
+chage -W 7 test1
+
+chage -I 5 test1
+```
+
+---
+
+# RHCSA Exam Tips
+
+📌 Root UID = **0**
+
+📌 `/etc/passwd` → User Information
+
+📌 `/etc/group` → Group Information
+
+📌 `/etc/shadow` → Password Information
+
+📌 `/etc/login.defs` → Default Password Policy
+
+📌 `id` → Display User Information
+
+📌 `passwd` → Set Password
+
+📌 `chage` → Manage Password Aging
 
 ---
 
 # Interview Questions
 
-### What are the three types of users in Linux?
-
-- Root User
-- Regular User
-- System User
-
----
-
 ### What is UID?
 
-UID (User Identification Number) uniquely identifies every user.
+User Identification Number.
 
 ---
 
-### What is the UID of the root user?
+### What is GID?
 
-```
-0
-```
+Group Identification Number.
 
 ---
 
-### Which file stores user information?
+### Which file stores encrypted passwords?
 
 ```
-/etc/passwd
-```
-
----
-
-### Which file stores group information?
-
-```
-/etc/group
+/etc/shadow
 ```
 
 ---
 
-### What is the difference between a Primary Group and a Secondary Group?
-
-| Primary Group | Secondary Group |
-|---------------|-----------------|
-| One per user | Multiple allowed |
-| Created automatically | Added manually |
-
----
-
-### Which command displays user information?
+### Which command creates a user?
 
 ```bash
-id
+useradd
+```
+
+---
+
+### Which command changes a password?
+
+```bash
+passwd
+```
+
+---
+
+### Which command displays password aging?
+
+```bash
+chage -l
+```
+
+---
+
+### Which file controls default password policy?
+
+```
+/etc/login.defs
 ```
 
 ---
 
 # Common Mistakes
 
-❌ Creating a user without assigning a password.
-
-❌ Editing `/etc/passwd` manually without understanding its format.
+❌ Creating users without passwords.
 
 ❌ Confusing UID with GID.
 
-❌ Logging in as root for normal tasks.
+❌ Editing `/etc/passwd` manually.
 
-❌ Forgetting to verify the user using `id`.
+❌ Sharing the `/etc/shadow` file.
+
+❌ Forgetting to verify users with `id`.
 
 ---
 
@@ -507,17 +684,25 @@ cat /etc/passwd
 
 cat /etc/group
 
+cat /etc/shadow
+
+id test1
+
 useradd test1
 
 useradd -u 3000 test1
 
 passwd test1
 
-usermod --help
+usermod -L test1
 
-id
+usermod -U test1
 
-id test1
+chage -l test1
+
+chage -d 0 test1
+
+cat /etc/login.defs
 ```
 
 ---
@@ -526,35 +711,40 @@ id test1
 
 In this chapter, I learned
 
-- Types of Linux users
-- User IDs (UID)
-- Group IDs (GID)
+- Linux User Types
+- UID and GID
 - `/etc/passwd`
 - `/etc/group`
-- Creating users
-- Setting passwords
-- Modifying users
-- Primary and Secondary groups
-- Viewing user information
+- `/etc/shadow`
+- User Management
+- Group Management
+- Password Management
+- Password Aging
+- `chage`
+- `/etc/login.defs`
 
 ---
 
 # Key Takeaways
 
-✅ Linux supports multiple users.
+✅ Linux is a multi-user operating system.
 
 ✅ Every user has a unique UID.
 
 ✅ Root always has UID 0.
 
-✅ User information is stored in `/etc/passwd`.
+✅ `/etc/passwd` stores user information.
 
-✅ Group information is stored in `/etc/group`.
+✅ `/etc/group` stores group information.
 
-✅ Use `useradd` to create users.
+✅ `/etc/shadow` stores encrypted passwords.
 
-✅ Use `passwd` to assign passwords.
+✅ `useradd` creates users.
 
-✅ Use `usermod` to modify existing users.
+✅ `passwd` assigns passwords.
 
-✅ Use `id` to verify user and group information.
+✅ `usermod` modifies existing users.
+
+✅ `chage` manages password aging policies.
+
+✅ `/etc/login.defs` defines default password settings.
