@@ -42,10 +42,6 @@ The goal is to build practical Linux administration skills while tracking my pro
 
 ```text
 Notes/
-Labs/
-Commands/
-Cheatsheets/
-Practice/
 Resources/
 ```
 
