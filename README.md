@@ -54,7 +54,7 @@ Resources/
 | ✅ Introduction to Vim & SSH | ✔ Completed |
 | 📁 Manage Files from the Command Line | ✔ Completed |
 | 👤 Users and Groups |  ✔ Completed |
-| 🔒 Control Access to Files | ⏳ |
+| 🔒 Control Access to Files | ✔ Completed |
 | 🛡️ Manage SELinux Security | ⏳ |
 | ⚙ Tune System Performance | ⏳ |
 | ⏰ Schedule Future Tasks | ⏳ |
