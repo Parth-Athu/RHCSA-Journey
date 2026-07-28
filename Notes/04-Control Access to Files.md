@@ -1,68 +1,70 @@
 # 📂 Chapter 4: Control Access to Files
 
-> **Objective:** Learn how Linux controls access to files and directories using permissions, ownership, and the `chmod`, `chown`, and `chgrp` commands.
+> **Objective:** Learn Linux file permissions, ownership, special permissions (SUID, SGID, Sticky Bit), and default permissions using `umask`.
 
 ---
 
 # 📚 Table of Contents
 
 1. Access Control Mechanisms
-2. Linux File Permissions
-3. Permission Levels
+2. Linux Permissions
+3. Basic Permissions
 4. File vs Directory Permissions
-5. Viewing Permissions
-6. Changing Permissions (`chmod`)
-7. Symbolic Method
-8. Octal (Numeric) Method
-9. File Ownership
-10. Changing Ownership (`chown`)
-11. Changing Group Ownership (`chgrp`)
-12. Practice Tasks
-13. RHCSA Exam Tips
-14. Interview Questions
-15. Quick Revision
+5. Changing Permissions (`chmod`)
+6. Permission Methods
+7. File Ownership
+8. Changing Ownership (`chown` & `chgrp`)
+9. Special Permissions
+10. Default Permissions (`umask`)
+11. Practice Tasks
+12. RHCSA Exam Tips
+13. Interview Questions
+14. Quick Revision
 
 ---
 
 # 🔐 Access Control Mechanisms
 
-Linux provides two methods to control access to files and directories.
+Linux provides two mechanisms to control access to resources.
 
 ## 1. DAC (Discretionary Access Control)
 
-DAC allows the **owner of a file or directory** to decide who can access it by assigning permissions.
+DAC allows the **owner** of a file or directory to decide who can access it.
+
+The owner controls permissions using Linux file permissions.
 
 Example:
 
-- User creates a file.
-- That user can decide who can read, modify, or execute it.
+- Read
+- Write
+- Execute
 
 ---
 
 ## 2. MAC (Mandatory Access Control)
 
-MAC controls how **processes** interact with system resources.
+MAC controls how processes access system resources.
 
 In Red Hat Enterprise Linux, this is implemented using **SELinux (Security-Enhanced Linux)**.
 
-Unlike DAC, users cannot directly modify MAC policies.
+Unlike DAC, MAC policies are enforced by the operating system.
 
 ---
 
-# 🔑 Linux File Permissions
+# 🔑 Linux Permissions
 
-Every file and directory has three permission sets.
+Every file and directory has three permission levels.
 
 ```text
 rw-   r--   r--
 │      │      │
 │      │      └── Others (o)
 │      └───────── Group (g)
-└──────────────── User/Owner (u)
+└──────────────── User / Owner (u)
 ```
 
-| Symbol | Represents |
-|---------|------------|
+| Symbol | Meaning |
+|---------|---------|
 | u | User (Owner) |
 | g | Group |
 | o | Others |
@@ -83,69 +85,32 @@ rw-   r--   r--
 
 | Permission | File | Directory |
 |------------|------|-----------|
-| Read (r) | Read file contents | List files inside the directory |
-| Write (w) | Modify file | Create, rename, or delete files |
-| Execute (x) | Run the file | Enter/access the directory |
+| Read | View file contents | List files |
+| Write | Modify file | Create/Delete files |
+| Execute | Run program | Enter the directory |
 
 ---
 
-# 👀 Viewing Permissions
+# 🔧 Changing Permissions
 
-Use the following command:
+Linux uses the **chmod** command.
 
-```bash
-ls -l
-```
+**chmod** = Change Mode
 
-Example output:
-
-```text
--rwxr-xr--
-```
-
-Breakdown:
-
-```text
-- rwx r-x r--
-  │   │   │
-  │   │   └── Others
-  │   └────── Group
-  └────────── User
-```
-
-First Character:
-
-| Symbol | Meaning |
-|--------|---------|
-| - | Regular File |
-| d | Directory |
-| l | Symbolic Link |
-
----
-
-# 🛠 Changing Permissions (`chmod`)
-
-`chmod` stands for **Change Mode**.
-
-Syntax:
+## Syntax
 
 ```bash
 chmod [permissions] file
 ```
 
-Linux supports two methods:
-
-- Symbolic Method
-- Octal (Numeric) Method
-
 ---
 
-# 🔠 Symbolic Method
+# Method 1: Symbolic Method
 
-Symbols used:
+Uses symbols such as:
 
 | Symbol | Meaning |
-|--------|---------|
+|---------|---------|
 | u | User |
 | g | Group |
 | o | Others |
@@ -155,7 +120,7 @@ Symbols used:
 
 Examples
 
-Remove execute permission from owner
+Remove execute permission from user
 
 ```bash
 chmod u-x file1
@@ -181,7 +146,7 @@ chmod u=r--,g=rw-,o=r-- file1
 
 ---
 
-# 🔢 Octal (Numeric) Method
+# Method 2: Octal (Numeric) Method
 
 Permission values
 
@@ -191,7 +156,7 @@ Permission values
 | Write | 2 |
 | Execute | 1 |
 
-### Common Values
+Common combinations
 
 | Number | Permission |
 |--------:|------------|
@@ -204,49 +169,51 @@ Permission values
 | 6 | rw- |
 | 7 | rwx |
 
----
-
-### Examples
-
-#### chmod 674 file1
-
-| User | Group | Others |
-|------|-------|--------|
-| rw- | rwx | r-- |
+Examples
 
 ```bash
 chmod 674 file1
 ```
 
+Permission
+
+```text
+User    → rw-
+Group   → rwx
+Others  → r--
+```
+
 ---
-
-#### chmod 755 file2
-
-| User | Group | Others |
-|------|-------|--------|
-| rwx | r-x | r-x |
 
 ```bash
 chmod 755 file2
 ```
 
+Permission
+
+```text
+User    → rwx
+Group   → r-x
+Others  → r-x
+```
+
 ---
-
-#### chmod 643 file3
-
-| User | Group | Others |
-|------|-------|--------|
-| rw- | r-- | -wx |
 
 ```bash
 chmod 643 file3
 ```
 
+Permission
+
+```text
+User    → rw-
+Group   → r--
+Others  → -wx
+```
+
 ---
 
-#### Example
-
-Permissions
+Example
 
 ```text
 r-x   -wx   r--
@@ -268,17 +235,19 @@ chmod 534 file4
 
 # 👤 File Ownership
 
-Every file has two ownership types.
+Every file has two ownerships.
 
-## User Ownership
+## 1. User Ownership
 
 Represents the owner of the file.
 
-## Group Ownership
+---
 
-Represents the group associated with the file.
+## 2. Group Ownership
 
-Check ownership
+Represents the group assigned to the file.
+
+View ownership
 
 ```bash
 ls -l
@@ -286,11 +255,9 @@ ls -l
 
 ---
 
-# 👨‍💻 Change User Ownership
+# 🔄 Changing Ownership
 
-Use the `chown` command.
-
-Syntax
+## Change User Ownership
 
 ```bash
 chown username file
@@ -304,15 +271,15 @@ chown student file1
 
 ---
 
-# 👥 Change Group Ownership
+## Change Group Ownership
 
-### Method 1
+Method 1
 
 ```bash
 chown :developers file1
 ```
 
-### Method 2
+Method 2
 
 ```bash
 chgrp developers file1
@@ -320,118 +287,341 @@ chgrp developers file1
 
 ---
 
-# 🔄 Change User & Group Together
-
-Syntax
+## Change User and Group Together
 
 ```bash
-chown username:groupname file
+chown student:developers file1
+```
+
+---
+
+# ⭐ Special Permissions
+
+Linux provides three special permissions.
+
+| Permission | Numeric | Applied On | Purpose |
+|------------|---------|------------|---------|
+| SUID | 4 | Executable Files | Run with owner's privileges |
+| SGID | 2 | Directories | New files inherit the directory's group |
+| Sticky Bit | 1 | Directories | Users cannot delete each other's files |
+
+---
+
+# 1️⃣ SUID (Set User ID)
+
+Applied to executable files.
+
+When another user executes the file, it runs with the **owner's privileges**.
+
+## Symbolic
+
+```bash
+chmod u+s filename
+```
+
+## Numeric
+
+```bash
+chmod 4xxx filename
 ```
 
 Example
 
 ```bash
-chown student:developers file1
+chmod 4755 program
+```
+
+Check
+
+```bash
+ls -l program
+```
+
+Output
+
+```text
+-rwsr-xr-x
+```
+
+### Example
+
+The `passwd` command uses SUID.
+
+```bash
+ls -l /usr/bin/passwd
+```
+
+Because it needs temporary root privileges to update `/etc/shadow`.
+
+---
+
+# 2️⃣ SGID (Set Group ID)
+
+Applied mainly to **directories**.
+
+Any file created inside inherits the **directory's group owner**, even if the creator's primary group is different.
+
+## Symbolic
+
+```bash
+chmod g+s directory
+```
+
+## Numeric
+
+```bash
+chmod 2xxx directory
+```
+
+Example
+
+```bash
+chmod 2775 project
+```
+
+Check
+
+```bash
+ls -ld project
+```
+
+Output
+
+```text
+drwxrwsr-x
+```
+
+---
+
+# 3️⃣ Sticky Bit
+
+Applied to **shared directories**.
+
+All users can create files, but users cannot delete or rename files owned by other users.
+
+Only these users can delete a file:
+
+- File Owner
+- Directory Owner
+- Root
+
+## Symbolic
+
+```bash
+chmod o+t directory
+```
+
+## Numeric
+
+```bash
+chmod 1xxx directory
+```
+
+Example
+
+```bash
+chmod 1777 shared
+```
+
+Output
+
+```text
+drwxrwxrwt
+```
+
+Example:
+
+```bash
+ls -ld /tmp
+```
+
+Output
+
+```text
+drwxrwxrwt
+```
+
+---
+
+# 🔒 Default Permissions
+
+Whenever a file or directory is created, Linux automatically assigns default permissions.
+
+These permissions are controlled by **umask**.
+
+---
+
+# 📌 Maximum Permissions
+
+| Object | Maximum Permission |
+|---------|-------------------:|
+| File | 666 |
+| Directory | 777 |
+
+---
+
+# 📌 What is umask?
+
+`umask` removes permissions from the maximum permission.
+
+Formula
+
+```text
+Default Permission = Maximum Permission - umask
+```
+
+---
+
+### Example
+
+Current umask
+
+```text
+022
+```
+
+Directory
+
+```text
+777 - 022 = 755
+```
+
+File
+
+```text
+666 - 022 = 644
+```
+
+---
+
+Example
+
+If a directory should have permission:
+
+```text
+664
+```
+
+Then
+
+```text
+777 - 664 = 113
+```
+
+So
+
+```text
+umask = 113
+```
+
+---
+
+# 👀 View Current umask
+
+```bash
+umask
+```
+
+---
+
+# Runtime umask
+
+Temporary until logout.
+
+```bash
+umask 027
+```
+
+---
+
+# Persistent umask
+
+## Regular User
+
+Edit
+
+```text
+~/.bashrc
+```
+
+Add
+
+```bash
+umask 027
+```
+
+Reload
+
+```bash
+source ~/.bashrc
+```
+
+---
+
+## Root User
+
+Edit
+
+```text
+/etc/profile
+```
+
+Add
+
+```bash
+umask 027
+```
+
+Reload
+
+```bash
+source /etc/profile
 ```
 
 ---
 
 # 🧪 Practice Tasks
 
-## Task 1
-
-Create a file.
-
 ```bash
 touch file1
-```
 
----
+ls -l
 
-## Task 2
-
-Display file permissions.
-
-```bash
-ls -l file1
-```
-
----
-
-## Task 3
-
-Give permission `644`.
-
-```bash
-chmod 644 file1
-```
-
----
-
-## Task 4
-
-Give permission `755`.
-
-```bash
 chmod 755 file1
-```
 
----
+chmod 644 file1
 
-## Task 5
+chmod u+x file1
 
-Remove execute permission from the owner.
+chmod g+s project
 
-```bash
-chmod u-x file1
-```
+chmod u+s program
 
----
+chmod o+t shared
 
-## Task 6
-
-Change the file owner.
-
-```bash
 chown student file1
-```
 
----
-
-## Task 7
-
-Change the file group.
-
-```bash
 chgrp developers file1
-```
 
----
-
-## Task 8
-
-Change both owner and group.
-
-```bash
 chown student:developers file1
+
+umask
+
+umask 027
 ```
 
 ---
 
 # 💡 RHCSA Exam Tips
 
-- `chmod` → Change file permissions.
-- `chown` → Change file owner.
-- `chgrp` → Change file group.
-- `ls -l` → View permissions and ownership.
-
-Remember:
-
-| Permission | Value |
-|------------|------:|
-| r | 4 |
-| w | 2 |
-| x | 1 |
+- `chmod` → Change permissions
+- `chown` → Change owner
+- `chgrp` → Change group
+- `ls -l` → View permissions
+- `SUID` → Executable files
+- `SGID` → Shared directories
+- `Sticky Bit` → Shared directories like `/tmp`
+- `umask` → Controls default permissions
 
 ---
 
@@ -439,58 +629,69 @@ Remember:
 
 ### What is DAC?
 
-Discretionary Access Control allows the file owner to manage access permissions.
+Discretionary Access Control allows the owner to control file permissions.
 
 ---
 
 ### What is MAC?
 
-Mandatory Access Control is enforced by SELinux and controls how processes access resources.
+Mandatory Access Control is implemented using SELinux.
 
 ---
 
-### Difference between `chmod` and `chown`?
+### Difference between SUID and SGID?
 
-- `chmod` changes permissions.
-- `chown` changes ownership.
-
----
-
-### Difference between `chown` and `chgrp`?
-
-- `chown` changes the user owner (and optionally the group).
-- `chgrp` changes only the group owner.
+- SUID runs a program with the owner's privileges.
+- SGID makes new files inherit the directory's group.
 
 ---
 
-### Which permission allows entering a directory?
+### What is Sticky Bit?
 
-**Execute (`x`)**
+It prevents users from deleting each other's files in a shared directory.
+
+---
+
+### Why does `/usr/bin/passwd` have SUID?
+
+Because it requires temporary root privileges to modify `/etc/shadow`.
+
+---
+
+### What is umask?
+
+A value that determines the default permissions for newly created files and directories.
 
 ---
 
 # ⚡ Quick Revision
 
 ```bash
-ls -l
-
 chmod 755 file
 
 chmod 644 file
 
-chmod u+x file
+chmod u+s file
 
-chmod g-w file
+chmod g+s directory
 
-chmod o-r file
+chmod o+t directory
 
-chmod u=rwx,g=rx,o=r file
+chmod 4755 file
 
-chown student file
+chmod 2775 directory
 
-chown :developers file
+chmod 1777 directory
 
-chgrp developers file
+chown user file
 
-chown student:developers file
+chgrp group file
+
+chown user:group file
+
+umask
+
+umask 027
+
+source ~/.bashrc
 ```
