@@ -42,10 +42,6 @@ The goal is to build practical Linux administration skills while tracking my pro
 
 ```text
 Notes/
-Labs/
-Commands/
-Cheatsheets/
-Practice/
 Resources/
 ```
 
@@ -58,7 +54,7 @@ Resources/
 | ✅ Introduction to Vim & SSH | ✔ Completed |
 | 📁 Manage Files from the Command Line | ✔ Completed |
 | 👤 Users and Groups |  ✔ Completed |
-| 🔒 Control Access to Files | ⏳ |
+| 🔒 Control Access to Files | ✔ Completed |
 | 🛡️ Manage SELinux Security | ⏳ |
 | ⚙ Tune System Performance | ⏳ |
 | ⏰ Schedule Future Tasks | ⏳ |
@@ -93,7 +89,7 @@ Resources/
 - [x] Chapter 1 
 - [x] Chapter 2
 - [x] Chapter 3
-- [ ] Chapter 4
+- [x] Chapter 4
 - [ ] Chapter 5
 - [ ] Chapter 6
 - [ ] Chapter 7
