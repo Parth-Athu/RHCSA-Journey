@@ -56,7 +56,7 @@ Resources/
 | 👤 Users and Groups |  ✔ Completed |
 | 🔒 Control Access to Files | ✔ Completed |
 | 🛡️ Manage SELinux Security | ⏳ |
-| ⚙ Tune System Performance | ⏳ |
+| ⚙ Tune System Performance | ✔ Completed |
 | ⏰ Schedule Future Tasks | ⏳ |
 | 📦 Install & Update Packages | ⏳ |
 | 💾 Manage Basic Storage | ⏳ |
@@ -91,8 +91,8 @@ Resources/
 - [x] Chapter 3
 - [x] Chapter 4
 - [ ] Chapter 5
-- [ ] Chapter 6
-- [ ] Chapter 7
+- [x] Chapter 6
+- [x] Chapter 7
 - [ ] Chapter 8
 - [ ] Chapter 9
 - [ ] Chapter 10
