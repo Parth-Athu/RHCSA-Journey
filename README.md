@@ -43,6 +43,7 @@ The goal is to build practical Linux administration skills while tracking my pro
 ```text
 Notes/
 Resources/
+Exam Paper/
 ```
 
 ---
