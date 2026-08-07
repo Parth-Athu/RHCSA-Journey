@@ -58,9 +58,9 @@ Exam Paper/
 | 🔒 Control Access to Files | ✔ Completed |
 | 🛡️ Manage SELinux Security | ⏳ |
 | ⚙ Tune System Performance | ✔ Completed |
-| ⏰ Schedule Future Tasks | ⏳ |
-| 📦 Install & Update Packages | ⏳ |
-| 💾 Manage Basic Storage | ⏳ |
+| ⏰ Schedule Future Tasks | ✔ Completed |
+| 📦 Install & Update Packages | ✔ Completed |
+| 💾 Manage Basic Storage | ✔ Completed |
 | 🗄 Manage Storage Stack | ⏳ |
 | 🚀 Services & Boot Process | ⏳ |
 | 📄 Analyze & Store Logs | ⏳ |
@@ -94,8 +94,8 @@ Exam Paper/
 - [ ] Chapter 5
 - [x] Chapter 6
 - [x] Chapter 7
-- [ ] Chapter 8
-- [ ] Chapter 9
+- [x] Chapter 8
+- [x] Chapter 9
 - [ ] Chapter 10
 - [ ] Chapter 11
 - [ ] Chapter 12
