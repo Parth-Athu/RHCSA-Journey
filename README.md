@@ -61,9 +61,9 @@ Exam Paper/
 | ⏰ Schedule Future Tasks | ✔ Completed |
 | 📦 Install & Update Packages | ✔ Completed |
 | 💾 Manage Basic Storage | ✔ Completed |
-| 🗄 Manage Storage Stack | ⏳ |
-| 🚀 Services & Boot Process | ⏳ |
-| 📄 Analyze & Store Logs | ⏳ |
+| 🗄 Manage Storage Stack | ✔ Completed |
+| 🚀 Services & Boot Process | ✔ Completed |
+| 📄 Analyze & Store Logs | ✔ Completed |
 | 🌐 Manage Networking | ⏳ |
 | 📁 Network Attached Storage | ⏳ |
 | 🔥 Network Security | ⏳ |
@@ -96,9 +96,9 @@ Exam Paper/
 - [x] Chapter 7
 - [x] Chapter 8
 - [x] Chapter 9
-- [ ] Chapter 10
-- [ ] Chapter 11
-- [ ] Chapter 12
+- [x] Chapter 10
+- [x] Chapter 11
+- [x] Chapter 12
 - [ ] Chapter 13
 - [ ] Chapter 14
 - [ ] Chapter 15
