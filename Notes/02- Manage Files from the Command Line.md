@@ -1,723 +1,1077 @@
-# Chapter 2: Manage Files from the Command Line
+# CH-2 — Linux File System, Links & Searching
 
-> **Objective:** Understand the Linux file system hierarchy, navigate directories, create links, search text using `grep`, and use shell expansions and wildcards efficiently.
-
----
-
-# Table of Contents
-
-1. Linux File System Hierarchy
-2. Navigation Basics
-3. Soft Links (Symbolic Links)
-4. Hard Links
-5. Inode Number
-6. Searching Text with `grep`
-7. Wildcards
-8. Brace Expansion
-9. Practice Tasks
-10. Interview Questions
-11. Common Mistakes
-12. Quick Revision
-13. Summary
+> **RHCSA Journey**
+> Focus: Filesystem Hierarchy • Links • Inodes • `grep` • Wildcards • Brace Expansion
 
 ---
 
-# Introduction
+## 1. Linux File System Hierarchy
 
-Everything in Linux is organized in a hierarchical directory structure called the **File System Hierarchy**.
+Linux has a **tree-like filesystem** starting from:
 
-Unlike Windows (C:, D:, E: drives), Linux starts from a single top-level directory called the **Root Directory (`/`)**.
-
-```
-        /
-       ├── boot
-       ├── dev
-       ├── etc
-       ├── home
-       ├── root
-       ├── usr
-       ├── var
-       ├── tmp
-       └── ...
+```text
+/
+└── Root directory
 ```
 
-Understanding this hierarchy is essential for every Linux administrator.
-
----
-
-# 1. Linux File System Hierarchy
-
-## `/boot`
-
-Stores boot-related files.
-
-Contents include:
-
-- Linux Kernel (`vmlinuz`)
-- Bootloader files
-- Initial RAM Disk (initramfs)
-
-Example
+View the main directories:
 
 ```bash
-ls /boot
+ls /
 ```
+
+### 📌 Important Directories
+
+| Directory   | Purpose                         | Remember          |
+| ----------- | ------------------------------- | ----------------- |
+| `/`         | Root of filesystem              | 🌳 Starting point |
+| `/boot`     | Kernel & boot files             | 🚀 Boot           |
+| `/dev`      | Device files                    | 🔌 Devices        |
+| `/etc`      | Configuration files             | ⚙️ Config         |
+| `/home`     | Regular users' home directories | 👤 Users          |
+| `/root`     | Root user's home directory      | 👑 Root home      |
+| `/tmp`      | Temporary files                 | 🗑️ Temporary     |
+| `/usr/bin`  | Common executable programs      | 🧰 Commands       |
+| `/usr/sbin` | System administration programs  | 🛠️ Admin         |
+| `/usr/lib`  | Libraries                       | 📚 Libraries      |
+| `/media`    | Removable media mount points    | 💿 USB/CD         |
+| `/mnt`      | Temporary/manual mount point    | 📦 Mount          |
+| `/run`      | Runtime data                    | ⚡ Runtime         |
+| `/var`      | Variable/changing data          | 📊 Logs/data      |
+
+### 🧠 Quick Memory
+
+```text
+boot → boot
+dev  → devices
+etc  → configuration
+home → users
+root → root's home
+tmp  → temporary
+usr  → programs/libraries
+run  → runtime
+var  → variable data
+```
+
+> ⚠️ **Don't confuse:**
+> `/` = filesystem root
+> `/root` = root user's home directory
 
 ---
 
-## `/dev`
-
-Contains device files.
-
-Examples
-
-- Hard Disk
-- Keyboard
-- Mouse
-- CPU
-- Printer
-- USB Devices
-
-Example
-
-```bash
-ls /dev
-```
-
----
-
-## `/home`
-
-Stores home directories for regular users.
-
-Example
-
-```
-/home/parth
-```
-
----
-
-## `/root`
-
-Home directory of the **root** user.
-
-```
-/root
-```
-
----
-
-## `/etc`
-
-Stores system configuration files.
-
-Examples
-
-```
-passwd
-
-hosts
-
-fstab
-
-ssh
-```
-
-Example
-
-```bash
-ls /etc
-```
-
----
-
-## `/tmp`
-
-Temporary storage.
-
-- Any user can create files here.
-- Temporary files are automatically deleted after reboot.
-
-Example
-
-```bash
-cd /tmp
-```
-
----
-
-## `/usr/bin`
-
-Stores executable programs for regular users.
-
-Example
-
-```bash
-ls /usr/bin
-```
-
----
-
-## `/usr/sbin`
-
-Stores administrative commands.
-
-Usually used by the root user.
-
----
-
-## `/usr/lib` and `/usr/lib64`
-
-Contain shared libraries used by applications.
-
----
-
-## `/media`
-
-Automatically mounts removable storage devices.
-
-Examples
-
-- USB Drives
-- CD/DVD
-
----
-
-## `/mnt`
-
-Used for manually mounting storage devices.
-
----
-
-## `/run`
-
-Stores runtime information.
-
-Contains temporary process information and runtime logs.
-
----
-
-## `/var`
-
-Stores variable data.
-
-Examples
-
-- System Logs
-- Mail
-- Cache
-- Print Queue
-
-Most log files are stored in
-
-```
-/var/log
-```
-
----
-
-# 2. Navigation Basics
-
-## Current Directory
-
-```
-.
-```
-
-Represents the current working directory.
-
----
-
-## Parent Directory
-
-```
-..
-```
-
-Represents the previous directory.
-
-Example
-
-```bash
-cd ..
-```
-
----
-
-## Home Directory
+# 2. Path Shortcuts
+
+| Symbol | Meaning             | Example |
+| ------ | ------------------- | ------- |
+| `.`    | Current directory   | `ls .`  |
+| `..`   | Parent directory    | `cd ..` |
+| `~`    | Current user's home | `cd ~`  |
+| `/`    | Filesystem root     | `cd /`  |
+
+### Useful commands
 
 ```bash
 cd
 ```
 
-or
+Go to home directory.
+
+```bash
+cd ..
+```
+
+Go to parent directory.
 
 ```bash
 cd ~
 ```
 
-Moves directly to the current user's home directory.
+Go to home directory.
+
+```bash
+pwd
+```
+
+Show current directory.
 
 ---
 
-# 3. Soft Link (Symbolic Link)
+# 3. Absolute vs Relative Path
 
-A **Soft Link** acts like a Windows shortcut.
+### Absolute Path
 
-It points to another file or directory.
-
-## Syntax
+Starts from `/`.
 
 ```bash
-ln -s source destination
+cd /etc/ssh
 ```
 
-Example
+### Relative Path
+
+Starts from your current location.
 
 ```bash
-ln -s /home/parth/file.txt shortcut.txt
+cd Documents
+cd ../Documents
+```
+
+### 🧠 Remember
+
+```text
+Absolute → starts with /
+Relative → starts from current directory
 ```
 
 ---
 
-## Advantages
+# 4. Links in Linux
 
-- Can link files
-- Can link directories
-- Easy access
+Linux has two important types of links:
+
+```text
+1. Soft Link
+2. Hard Link
+```
+
+Command:
+
+```bash
+ln
+```
+
+---
+
+# 5. Soft Link 🔗
+
+Also called a **Symbolic Link**.
+
+Think of it like a **shortcut**.
+
+### Create
+
+```bash
+ln -s SOURCE LINK
+```
+
+Example:
+
+```bash
+touch file.txt
+
+ln -s file.txt softlink.txt
+```
+
+Check:
+
+```bash
+ls -l
+```
+
+Output:
+
+```text
+softlink.txt -> file.txt
+```
+
+### Soft Link Can
+
+* Point to a file
+* Point to a directory
+* Cross filesystems
+* Become broken if the original disappears
 
 ---
 
 ## Dangling Soft Link
 
-If the original file is moved or deleted,
-
-the symbolic link becomes invalid.
-
-Example
-
-```
-shortcut.txt -> Broken Link
-```
-
-Linux usually displays broken links in **red**.
-
----
-
-# 4. Hard Link
-
-A Hard Link creates another reference to the same file.
-
-## Syntax
+If the original file is deleted or moved:
 
 ```bash
-ln source destination
+rm file.txt
 ```
 
-Example
+The link remains, but its target doesn't exist.
+
+This is called a:
+
+> **Dangling / Broken Symbolic Link**
+
+---
+
+# 6. Hard Link 🔗
+
+A hard link is another directory entry pointing to the **same inode/data** as the original file.
+
+### Create
 
 ```bash
-ln file.txt backup.txt
+ln SOURCE LINK
+```
+
+Example:
+
+```bash
+touch file.txt
+
+ln file.txt hardlink.txt
+```
+
+Check:
+
+```bash
+ls -li
+```
+
+Example:
+
+```text
+123456 -rw-r--r-- 2 user user ... file.txt
+123456 -rw-r--r-- 2 user user ... hardlink.txt
+```
+
+Notice:
+
+```text
+Same inode number
+        ↓
+     123456
 ```
 
 ---
 
-## Advantages
+# 7. Inode
 
-Even if the original file is deleted,
+An **inode** is a data structure that stores information about a filesystem object, such as:
 
-the hard link still contains the data.
+* Permissions
+* Owner
+* Group
+* File size
+* Timestamps
+* File data location information
 
----
+Every file has an inode.
 
-## Limitations
-
-❌ Cannot create a hard link for directories.
-
-❌ Cannot create hard links across different file systems.
-
----
-
-# Soft Link vs Hard Link
-
-| Soft Link | Hard Link |
-|------------|-----------|
-| Shortcut | Copy of inode |
-| Can link directories | Cannot link directories |
-| Breaks if source is deleted | Still works |
-| Different inode | Same inode |
-
----
-
-# 5. Inode Number
-
-Every file in Linux has a unique **inode number**.
-
-The inode stores information like
-
-- Owner
-- Permissions
-- Size
-- Creation Time
-- File Location
-
----
-
-## Check Inode Number
+### Check inode number
 
 ```bash
 ls -i
 ```
 
-Example
+or:
 
 ```bash
-ls -i file.txt
-```
-
-Files having the same inode number are hard links.
-
----
-
-# 6. Searching Text using grep
-
-`grep` is used to search text inside files.
-
-## Syntax
-
-```bash
-grep [options] "pattern" filename
-```
-
-Example
-
-```bash
-grep "linux" notes.txt
+ls -li
 ```
 
 ---
 
-## grep Options
+## 🔥 Hard Link Trick
 
-### Ignore Case
+If two files have:
+
+```text
+Same inode number
+        ↓
+They are hard links to the same file data
+```
+
+Example:
+
+```text
+1234 file.txt
+1234 hardlink.txt
+```
+
+Same inode → hard links.
+
+---
+
+# 8. Hard Link vs Soft Link
+
+| Feature            | Soft Link | Hard Link                                  |
+| ------------------ | --------- | ------------------------------------------ |
+| Command            | `ln -s`   | `ln`                                       |
+| Points to          | Path/name | Same inode                                 |
+| Directory link     | ✅ Yes     | ❌ Generally not allowed                    |
+| Cross filesystem   | ✅ Yes     | ❌ No                                       |
+| Own inode          | ✅ Yes     | ❌ Same inode                               |
+| Target deleted     | ❌ Broken  | ✅ Data remains if another hard link exists |
+| `ls -l` shows `->` | ✅ Yes     | ❌ No                                       |
+
+### 🧠 Exam Shortcut
+
+```text
+ln -s → Soft Link
+ln    → Hard Link
+```
+
+---
+
+# 9. `grep` — Search Text 🔎
+
+`grep` is used to **search for a pattern/string inside text**.
+
+### Syntax
 
 ```bash
-grep -i linux file.txt
+grep [OPTIONS] "PATTERN" FILE
 ```
 
-Matches
+Example:
 
+```bash
+grep "linux" file.txt
 ```
+
+---
+
+# 10. Important `grep` Options
+
+### `grep -i`
+
+Ignore case.
+
+```bash
+grep -i "linux" file.txt
+```
+
+Matches:
+
+```text
 Linux
+linux
 LINUX
-linux
+LiNuX
 ```
 
 ---
 
-### Exclude Pattern
+### `grep -v`
+
+Invert the match.
+
+It displays lines that **do NOT contain** the pattern.
 
 ```bash
-grep -v linux file.txt
-```
-
-Displays everything except lines containing
-
-```
-linux
+grep -v "linux" file.txt
 ```
 
 ---
 
-### Show Line Numbers
+### `grep -n`
+
+Show line numbers.
 
 ```bash
-grep -n linux file.txt
+grep -n "linux" file.txt
+```
+
+Example:
+
+```text
+5:Linux is powerful
+12:Linux is open source
 ```
 
 ---
 
-### Count Matches
+### `grep -c`
+
+Count matching **lines**.
 
 ```bash
-grep -c linux file.txt
+grep -c "linux" file.txt
 ```
+
+> ⚠️ Remember: `grep -c` counts matching **lines**, not necessarily the total number of times the word appears.
 
 ---
 
-### Match Whole Word
+### `grep -w`
+
+Match a complete word.
 
 ```bash
-grep -w dog file.txt
+grep -w "dog" file.txt
 ```
 
-Matches
+This matches:
 
-```
+```text
 dog
 ```
 
-Does not match
+but not:
 
-```
-doggy
-```
-
----
-
-# 7. Wildcards
-
-Wildcards are special symbols used to search or match file names.
-
-| Symbol | Meaning |
-|---------|---------|
-| `*` | Zero or more characters |
-| `?` | Exactly one character |
-| `^` | Beginning of line (grep regex) |
-| `$` | End of line (grep regex) |
-| `!` | Negation / Exclude (depends on context) |
-
-Examples
-
-Starts with
-
-```bash
-grep "^comp" file.txt
-```
-
-Ends with
-
-```bash
-grep "ing$" file.txt
+```text
+dogs
+hotdog
+doghouse
 ```
 
 ---
 
-# 8. Brace Expansion
+# 11. `grep` Quick Table
 
-Brace expansion creates multiple files or directories.
+| Command            | Meaning                |
+| ------------------ | ---------------------- |
+| `grep "x" file`    | Search `x`             |
+| `grep -i "x" file` | Ignore case            |
+| `grep -v "x" file` | Exclude matching lines |
+| `grep -n "x" file` | Show line number       |
+| `grep -c "x" file` | Count matching lines   |
+| `grep -w "x" file` | Match whole word       |
 
-Example
+---
+
+# 12. Searching with Regular Expressions
+
+Some characters have special meanings when used with `grep`.
+
+### `^` — Starts With
+
+```bash
+grep '^comp' file
+```
+
+Finds lines beginning with:
+
+```text
+comp
+```
+
+---
+
+### `$` — Ends With
+
+```bash
+grep 'ich$' file
+```
+
+Finds lines ending with:
+
+```text
+ich
+```
+
+### RHCSA Example ⭐
+
+> Find strings ending in `ich` from `/usr/share/dict/words` and save them to `/root/lines`.
+
+```bash
+grep 'ich$' /usr/share/dict/words > /root/lines
+```
+
+---
+
+### `.` — Any Single Character
+
+In a regular expression:
+
+```bash
+grep 'c.t' file
+```
+
+Can match:
+
+```text
+cat
+cut
+cot
+```
+
+---
+
+### `*` — Zero or More of the Previous Character/Expression
+
+Example:
+
+```bash
+grep 'ab*' file
+```
+
+Can match:
+
+```text
+a
+ab
+abb
+abbb
+```
+
+> ⚠️ `*` does **not simply mean "including keyword"** in regular expressions. It modifies the item immediately before it.
+
+---
+
+# 13. Wildcards vs Regular Expressions ⚠️
+
+Don't mix these up.
+
+### Shell Wildcards
+
+Used mainly for **matching filenames**.
+
+```text
+*   → Any number of characters
+?   → Exactly one character
+[]  → Character range/set
+```
+
+Example:
+
+```bash
+ls *.txt
+```
+
+---
+
+### Regular Expressions
+
+Used by commands such as `grep` to match **text patterns**.
+
+Examples:
+
+```text
+^   → Start of line
+$   → End of line
+.   → Any single character
+*   → Zero or more of previous item
+```
+
+### 🧠 Exam Tip
+
+```text
+Filename matching → Shell wildcards
+Text matching     → grep / Regular Expressions
+```
+
+---
+
+# 14. Shell Wildcards
+
+## `*`
+
+Matches zero or more characters.
+
+```bash
+ls *.txt
+```
+
+Matches:
+
+```text
+a.txt
+file.txt
+hello.txt
+```
+
+---
+
+## `?`
+
+Matches exactly **one character**.
+
+```bash
+ls file?.txt
+```
+
+Matches:
+
+```text
+file1.txt
+fileA.txt
+```
+
+But not:
+
+```text
+file10.txt
+```
+
+---
+
+## `[ ]`
+
+Matches one character from a specified set/range.
+
+Example:
+
+```bash
+ls file[1-3].txt
+```
+
+Matches:
+
+```text
+file1.txt
+file2.txt
+file3.txt
+```
+
+---
+
+# 15. Brace Expansion `{}`
+
+Brace expansion is useful for generating multiple strings.
+
+Example:
 
 ```bash
 touch file{1..20}.txt
 ```
 
-Creates
+Creates:
 
-```
+```text
 file1.txt
-
 file2.txt
-
 file3.txt
-
 ...
-
 file20.txt
 ```
 
-Create folders
+### Another Example
 
 ```bash
-mkdir project{1..10}
+mkdir dir{1..5}
+```
+
+Creates:
+
+```text
+dir1
+dir2
+dir3
+dir4
+dir5
+```
+
+### Multiple values
+
+```bash
+touch {apple,banana,mango}.txt
+```
+
+Creates:
+
+```text
+apple.txt
+banana.txt
+mango.txt
+```
+
+> 🧠 **Brace expansion generates names; it doesn't search existing files.**
+
+---
+
+# 16. RHCSA Practical Tasks
+
+## Task 1 — Create 30 Documents
+
+Create:
+
+```text
+/root/grep-practice
+```
+
+Then create:
+
+```text
+Document1.doc
+Document2.doc
+...
+Document30.doc
+```
+
+### Solution
+
+```bash
+mkdir -p /root/grep-practice
+cd /root/grep-practice
+touch Document{1..30}.doc
+```
+
+Verify:
+
+```bash
+ls
+```
+
+Or:
+
+```bash
+ls Document*.doc
+```
+
+Count them:
+
+```bash
+ls Document*.doc | wc -l
+```
+
+Expected:
+
+```text
+30
 ```
 
 ---
 
-# Practice Tasks
+# 17. Task 2 — Search Strings Starting With `comp`
 
-## Task 1
+Search `/usr/share/dict/words` for strings beginning with `comp`.
 
-Create
-
-```
-/root/grep-practice
+```bash
+grep '^comp' /usr/share/dict/words
 ```
 
-Inside it create
+### Why?
 
+```text
+^comp
+│
+└── line/string starts with "comp"
 ```
+
+---
+
+# 18. Task 3 — Search Exact Word `dog`
+
+Use:
+
+```bash
+grep -w 'dog' /usr/share/dict/words
+```
+
+### Why `-w`?
+
+It searches for the complete word rather than matching it as part of another word.
+
+---
+
+# 19. Task 4 — Search Ending With `ich`
+
+```bash
+grep 'ich$' /usr/share/dict/words
+```
+
+Save the result:
+
+```bash
+grep 'ich$' /usr/share/dict/words > /root/lines
+```
+
+Check:
+
+```bash
+cat /root/lines
+```
+
+---
+
+# 20. Redirection
+
+The `>` operator sends command output into a file.
+
+```bash
+command > file
+```
+
+Example:
+
+```bash
+grep 'ich$' /usr/share/dict/words > /root/lines
+```
+
+### Important
+
+`>` **overwrites** the file.
+
+`>>` **appends** to the file.
+
+```bash
+echo "Hello" > file.txt
+echo "World" >> file.txt
+```
+
+---
+
+# 21. Exam Questions ⭐
+
+### Q1. Find strings ending in `ich` and save them to `/root/lines`.
+
+```bash
+grep 'ich$' /usr/share/dict/words > /root/lines
+```
+
+---
+
+### Q2. Create 30 files:
+
+```text
 Document1.doc
-
 ...
-
 Document30.doc
 ```
 
-Command
+Solution:
 
 ```bash
-mkdir /root/grep-practice
-
+mkdir -p /root/grep-practice
 cd /root/grep-practice
-
 touch Document{1..30}.doc
 ```
 
 ---
 
-## Task 2
-
-Search words starting with
-
-```
-comp
-```
+### Q3. Find strings beginning with `comp`.
 
 ```bash
-grep "^comp" /usr/share/dict/words
+grep '^comp' /usr/share/dict/words
 ```
 
 ---
 
-## Task 3
-
-Search the exact word
-
-```
-dog
-```
+### Q4. Find the exact word `dog`.
 
 ```bash
-grep -w dog /usr/share/dict/words
+grep -w 'dog' /usr/share/dict/words
 ```
 
 ---
 
-## Task 4
-
-Practice
-
-```
-grep
-
-grep -i
-
-grep -v
-
-grep -n
-
-grep -c
-
-grep -w
-```
-
----
-
-# Interview Questions
-
-### What is the Linux File System Hierarchy?
-
-It is the directory structure used by Linux to organize files and system resources.
-
----
-
-### What is the difference between Soft Link and Hard Link?
-
-Soft Link is a shortcut.
-
-Hard Link shares the same inode with the original file.
-
----
-
-### What is an inode?
-
-An inode is a unique identifier containing metadata about a file.
-
----
-
-### What is grep?
-
-`grep` is a command-line utility used to search text inside files.
-
----
-
-### What is Brace Expansion?
-
-Brace expansion automatically creates multiple files or directories.
-
-Example
+### Q5. Create a soft link.
 
 ```bash
-touch file{1..5}.txt
+ln -s source link
 ```
 
 ---
 
-# Common Mistakes
+### Q6. Create a hard link.
 
-❌ Deleting the original file and expecting the symbolic link to work.
+```bash
+ln source hardlink
+```
 
-❌ Creating hard links for directories.
+Verify:
 
-❌ Forgetting `-s` while creating symbolic links.
-
-❌ Confusing `grep -w` and `grep -i`.
-
-❌ Running `grep` on binary files.
+```bash
+ls -li
+```
 
 ---
 
-# Quick Revision
+# 22. 🧪 Practice Lab
+
+Do this yourself without looking at the answers.
+
+### Part A — Files
+
+```text
+1. Create /root/grep-practice
+2. Create Document1.doc → Document30.doc
+3. Display all files
+4. Count the files
+```
+
+Useful commands:
 
 ```bash
+mkdir -p /root/grep-practice
+cd /root/grep-practice
+touch Document{1..30}.doc
+ls
+ls Document*.doc | wc -l
+```
+
+---
+
+### Part B — Soft Link
+
+```text
+1. Create original.txt
+2. Create a soft link
+3. Check the link
+4. Delete original.txt
+5. Check what happens to the link
+```
+
+Commands:
+
+```bash
+touch original.txt
+ln -s original.txt softlink.txt
+ls -l
+
+rm original.txt
+ls -l
+```
+
+Observe the broken/dangling link.
+
+---
+
+### Part C — Hard Link
+
+```text
+1. Create original.txt
+2. Create a hard link
+3. Check inode numbers
+4. Delete original.txt
+5. Check the hard link
+```
+
+Commands:
+
+```bash
+touch original.txt
+ln original.txt hardlink.txt
+
+ls -li
+
+rm original.txt
+
+cat hardlink.txt
+```
+
+### Observe
+
+The hard link still contains the file's data because it points to the same inode.
+
+---
+
+### Part D — `grep`
+
+Practice:
+
+```bash
+grep 'ich$' /usr/share/dict/words
+
+grep '^comp' /usr/share/dict/words
+
+grep -w 'dog' /usr/share/dict/words
+
+grep -i 'linux' file.txt
+
+grep -n 'linux' file.txt
+
+grep -v 'linux' file.txt
+
+grep -c 'linux' file.txt
+```
+
+---
+
+# 23. 🧠 Final Revision Sheet
+
+```text
+FILESYSTEM
+────────────────────────────
+/       → Filesystem root
+/boot   → Boot/kernel
+/dev    → Devices
+/etc    → Configuration
+/home   → User homes
+/root   → Root user's home
+/tmp    → Temporary files
+/usr    → Programs/libraries
+/run    → Runtime data
+/var    → Variable data/logs
+
+
+PATHS
+────────────────────────────
+.       → Current directory
+..      → Parent directory
+~       → Home directory
+/       → Filesystem root
+
+
+LINKS
+────────────────────────────
+ln -s   → Soft link
+ln      → Hard link
+
+Soft link:
+→ Path-based
+→ Can link directories
+→ Can cross filesystems
+→ Breaks if target disappears
+
+Hard link:
+→ Same inode
+→ Cannot normally link directories
+→ Same filesystem
+→ Data remains if another hard link exists
+
+
+INODE
+────────────────────────────
+ls -i
+ls -li
+
+Same inode → Hard links
+
+
+GREP
+────────────────────────────
+grep "x" file       → Search
+grep -i "x" file    → Ignore case
+grep -v "x" file    → Exclude matching lines
+grep -n "x" file    → Line number
+grep -c "x" file    → Count matching lines
+grep -w "x" file    → Whole word
+
+
+REGEX
+────────────────────────────
+^   → Starts with
+$   → Ends with
+.   → Any single character
+*   → Zero or more of previous item
+
+
+WILDCARDS
+────────────────────────────
+*       → Any number of characters
+?       → One character
+[1-3]   → Character range
+
+
+BRACE EXPANSION
+────────────────────────────
+touch file{1..20}.txt
+→ Creates file1.txt ... file20.txt
+```
+
+---
+
+# ⭐ RHCSA Must-Know Commands
+
+```bash
+ls /
+pwd
 cd
 cd ..
+cd ~
+ls -li
 
-ls
+ln source hardlink
+ln -s source softlink
 
-ls -i
+grep "pattern" file
+grep -i "pattern" file
+grep -v "pattern" file
+grep -n "pattern" file
+grep -c "pattern" file
+grep -w "pattern" file
 
-ln -s source destination
+grep '^comp' /usr/share/dict/words
+grep 'ich$' /usr/share/dict/words
 
-ln source destination
-
-grep keyword file
-
-grep -i keyword file
-
-grep -v keyword file
-
-grep -n keyword file
-
-grep -c keyword file
-
-grep -w keyword file
-
-touch file{1..20}.txt
+touch Document{1..30}.doc
 ```
 
----
-
-# Summary
-
-In this chapter, I learned
-
-- Linux File System Hierarchy
-- Home and Root directories
-- Soft Links
-- Hard Links
-- Inode Numbers
-- grep command
-- Wildcards
-- Brace Expansion
-
----
-
-# Key Takeaways
-
-✅ Linux follows a hierarchical file system.
-
-✅ Every file has a unique inode.
-
-✅ Soft links behave like shortcuts.
-
-✅ Hard links remain valid even if the original filename is deleted.
-
-✅ `grep` is one of the most powerful commands for searching text.
-
-✅ Brace expansion saves time when creating multiple files.
-
-✅ Mastering file management is a core RHCSA skill.
+> **Chapter 2 Goal:** Be able to perform every command above directly in the terminal without opening your notes.
