@@ -56,14 +56,14 @@ Exam Paper/
 | 📁 Manage Files from the Command Line | ✔ Completed |
 | 👤 Users and Groups |  ✔ Completed |
 | 🔒 Control Access to Files | ✔ Completed |
-| 🛡️ Manage SELinux Security | ⏳ |
+| 🛡️ Manage SELinux Security | ✔ Completed |
 | ⚙ Tune System Performance | ✔ Completed |
-| ⏰ Schedule Future Tasks | ⏳ |
-| 📦 Install & Update Packages | ⏳ |
-| 💾 Manage Basic Storage | ⏳ |
-| 🗄 Manage Storage Stack | ⏳ |
-| 🚀 Services & Boot Process | ⏳ |
-| 📄 Analyze & Store Logs | ⏳ |
+| ⏰ Schedule Future Tasks | ✔ Completed |
+| 📦 Install & Update Packages | ✔ Completed |
+| 💾 Manage Basic Storage | ✔ Completed |
+| 🗄 Manage Storage Stack | ✔ Completed |
+| 🚀 Services & Boot Process | ✔ Completed |
+| 📄 Analyze & Store Logs | ✔ Completed |
 | 🌐 Manage Networking | ⏳ |
 | 📁 Network Attached Storage | ⏳ |
 | 🔥 Network Security | ⏳ |
@@ -91,14 +91,14 @@ Exam Paper/
 - [x] Chapter 2
 - [x] Chapter 3
 - [x] Chapter 4
-- [ ] Chapter 5
+- [x] Chapter 5
 - [x] Chapter 6
 - [x] Chapter 7
-- [ ] Chapter 8
-- [ ] Chapter 9
-- [ ] Chapter 10
-- [ ] Chapter 11
-- [ ] Chapter 12
+- [x] Chapter 8
+- [x] Chapter 9
+- [x] Chapter 10
+- [x] Chapter 11
+- [x] Chapter 12
 - [ ] Chapter 13
 - [ ] Chapter 14
 - [ ] Chapter 15
